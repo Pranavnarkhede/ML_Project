@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LeafGuard- Disease Detection</title>
+</head>
+<body>
+    
+    <h1>Disease Detection</h1>
+
+    
+
+
+
+    <form id="uploadForm" enctype="multipart/form-data">
+        <input type="file" id="imageInput" name="file" accept="image/*">
+        <button type="button" onclick="predictDisease()">Predict Disease</button>
+    </form>
+
+    <!-- Container to display the image preview and prediction -->
+    <div id="prediction"></div>
+
+    <script>
+        function predictDisease() {
+            // Get the input element containing the selected file
+            var fileInput = document.getElementById('imageInput');
+            // Get the file object
+            var file = fileInput.files[0];
+            
+            // Check if a file is selected
+            console.log("Selected file:", file);
+            
+            // Now you can do whatever you want with the file, such as reading its contents
+            // For example, to display a preview of the image:
+            var reader = new FileReader();
+            reader.onload = function(event) {
+                var img = document.createElement('img');
+                img.src = event.target.result;
+                document.body.appendChild(img);
+            };
+            reader.readAsDataURL(file);
+
+            var formData = new FormData();
+            formData.append('files', file);
+
+            console.log(formData);
+
+            fetch('/disease-predict', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.text(); 
+            })
+            .then(html => {
+                var predictionDiv = document.getElementById('prediction');
+                predictionDiv.innerHTML = html;
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        }
+    </script>
+</body>
+</html>
+
+
+
+
